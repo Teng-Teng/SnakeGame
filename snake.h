@@ -24,6 +24,5 @@ int dy = 0;
 void initFood(void);
 void initSnake(void);
 void showUI(void);
-void gotoXY(int x, int y);
 void playGame(void);
 

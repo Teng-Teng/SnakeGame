@@ -1,19 +1,11 @@
-﻿//
-//  main.c
-//  SnakeGame
-//
-//  Created by Teng Teng on 2019-07-10.
-//  Copyright © 2019 Teng Teng. All rights reserved.
-//
-
-#define _CRT_SECURE_NO_WARNINGS
+﻿#define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <math.h>
-#include <unistd.h>
 #include <time.h>
-#include <curses.h>
+#include <Windows.h>
+#include <conio.h>
 #include "snake.h"
 
 void initFood() {
@@ -32,9 +24,14 @@ void initSnake() {
 }
 
 void showUI() {
+	COORD coord;
+
 	// show snake position
 	for (int i = 0; i < snake.size; i++) {
-		gotoXY(snake.body[i].X, snake.body[i].Y);
+		coord.X = snake.body[i].X;
+		coord.Y = snake.body[i].Y;
+
+		SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
 
 		if (i == 0)
 			putchar('@');
@@ -43,12 +40,11 @@ void showUI() {
 	}
 
 	// show food position
-	gotoXY(food[0], food[1]);
+	coord.X = food[0];
+	coord.Y = food[1];
+	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
 	putchar('#');
-}
 
-void gotoXY(int x, int y) {
-	printf("\x1b[%d;%df", y, x);
 }
 
 void playGame() {
@@ -59,6 +55,9 @@ void playGame() {
 		showUI();
 
 		// Direction control
+		while (_kbhit()) 
+			key = _getch();
+
 		switch (key) {
 		case 'D': case 'd':
 			dx = 1;
@@ -85,7 +84,7 @@ void playGame() {
 		}
 
 		// Whether it collides with itself
-		for (int i = 0; i < snake.size; i++) {
+		for (int i = 1; i < snake.size; i++) {
 			if (snake.body[0].X == snake.body[i].X && snake.body[0].Y == snake.body[i].Y)
 				return;
 		}
@@ -106,7 +105,8 @@ void playGame() {
 		snake.body[0].X += dx;
 		snake.body[0].Y += dy;
 
-		//        sleep(1);
+		Sleep(200);
+		system("cls");
 	}
 }
 
@@ -116,16 +116,8 @@ int main(int argc, const char* argv[]) {
 	initFood();
 	initSnake();
 	playGame();
-
-	//    while(1) {
-	//        sleep(1); // will sleep for 1 s
-	//        printf("%d\n", 888);
-	//    }
-
-
-	getchar();
-
-	return 0;
+	
+	return EXIT_SUCCESS;
 }
 
 
