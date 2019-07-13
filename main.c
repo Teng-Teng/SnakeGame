@@ -26,6 +26,11 @@ void initSnake() {
 void showUI() {
 	COORD coord;
 
+	coord.X = lx;
+	coord.Y = ly;
+	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
+	putchar(' ');
+
 	// show snake position
 	for (int i = 0; i < snake.size; i++) {
 		coord.X = snake.body[i].X;
@@ -52,6 +57,7 @@ void playGame() {
 
 	while (snake.body[0].X >= 0 && snake.body[0].X < WIDTH
 		&& snake.body[0].Y >= 0 && snake.body[0].Y < HEIGHT) {
+
 		showUI();
 
 		// Direction control
@@ -97,6 +103,9 @@ void playGame() {
 		}
 
 		// update coordinate for the snake
+		lx = snake.body[snake.size - 1].X;
+		ly = snake.body[snake.size - 1].Y;
+
 		for (int i = snake.size - 1; i > 0; i--) {
 			snake.body[i].X = snake.body[i - 1].X;
 			snake.body[i].Y = snake.body[i - 1].Y;
@@ -105,14 +114,35 @@ void playGame() {
 		snake.body[0].X += dx;
 		snake.body[0].Y += dy;
 
-		Sleep(200);
-		system("cls");
+		Sleep(150);
+		//system("cls");
+	}
+}
+
+void initWall(void) {
+	for (int i = 0; i <= HEIGHT; i++) {
+		for (int j = 0; j <= WIDTH; j++) {
+			if (i == HEIGHT)
+				putchar('=');
+			else if (j == WIDTH)
+				putchar('=');
+			else
+				putchar(' ');
+		}
+		putchar('\n');
 	}
 }
 
 int main(int argc, const char* argv[]) {
 	srand((size_t)time(NULL));
 
+	// remove the console cursor
+	CONSOLE_CURSOR_INFO cci;
+	cci.dwSize = sizeof(cci);
+	cci.bVisible = FALSE;
+	SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cci);
+
+	initWall();
 	initFood();
 	initSnake();
 	playGame();
